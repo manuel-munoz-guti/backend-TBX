@@ -1,7 +1,7 @@
-const router = require('express').Router();
-const response = require('express');
-const { getAllfilesDataController } = require('../controllers/filesController');
+const router = require('express').Router()
+const { getAllFilesDataController, getListController, getFileDataController } = require('../controllers/filesController')
 
-router.get('/data', getAllfilesDataController );
+router.get('/data', getFileDataController, getAllFilesDataController)
+router.get('/list', getListController)
 
-module.exports = router;
+module.exports = router

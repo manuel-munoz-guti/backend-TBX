@@ -1,43 +1,103 @@
 
-const response = require('express');
-const { formattingFile } = require('../helper/formattingFile');
-const { getAllFilesService, getFileByName } = require('../services/filesServices');
+const response = require('express')
+const { formattingFile } = require('../helper/formattingFile')
+const { getAllFilesService, getFileByName } = require('../services/filesServices')
 
-const getAllfilesDataController = async (req, res = response, next) => {
+const getAllFilesDataController = async (req, res = response, next) => {
+  try {
+    let adapterResponse = []
 
-    let adapterResponse = [];
+    const { statusText, status, data } = await getAllFilesService()
 
-    const respExternalAPI = await getAllFilesService();
-    
-    if(respExternalAPI.status === 200){
+    if (status === 200) {
+      const { files } = data
+      for (const name of files) {
+        const resposeFile = await getFileByName(name)
+        if (resposeFile.status === 200) {
+          const formattedFile = formattingFile(resposeFile.data, name)
+          if (formattedFile.length) {
+            adapterResponse = [...adapterResponse, { file: name, lines: formattedFile }]
+          }
+        }
+      }
+      return res.status(200).json({
+        ok: true,
+        data: adapterResponse
+      })
+    } else {
+      return res.status(status).json({
+        ok: false,
+        msg: statusText,
+        data
+      })
+    }
+  } catch (error) {
+    return res.status(500).json({
+      ok: false,
+      msg: 'Internal Server Error'
+    })
+  }
+}
 
-        const { files } = respExternalAPI.data;
-
-        for( let fileName of files){
-
-            let fileContent = await getFileByName(fileName);
-
-            if(fileContent.status === 200){
-                adapterResponse = [ ...adapterResponse, {
-                    "file": fileName,
-                    "lines": formattingFile( fileContent.data,fileName )
-                }];          
-            } 
+const getFileDataController = async (req, res = response, next) => {
+  try {
+    const { fileName: queryName } = req.query
+    const fileFound = []
+    if (queryName) {
+      const { data, status, statusText } = await getFileByName(queryName)
+      if (status === 200) {
+        const formattedFile = formattingFile(data, queryName)
+        if (formattedFile.length) {
+          fileFound.push({ file: queryName, lines: formattedFile })
         }
         return res.status(200).json({
-            ok: true,
-            data: adapterResponse
-        });
-
+          ok: true,
+          data: fileFound
+        })
+      } else {
+        return res.status(status).json({
+          ok: false,
+          msg: statusText,
+          data
+        })
+      }
     } else {
-        return res.status(respExternalAPI.status).json({
-            ok: false,
-            msg: respExternalAPI.statusText,
-            data: respExternalAPI.data
-        });
+      next()
     }
+  } catch (error) {
+    return res.status(500).json({
+      ok: false,
+      msg: 'Internal Server Error'
+    })
+  }
+}
+
+const getListController = async (req, res = response, next) => {
+  try {
+    const { statusText, status, data } = await getAllFilesService()
+
+    if (status === 200) {
+      return res.status(200).json({
+        ok: true,
+        data
+      })
+    } else {
+      return res.status(status).json({
+        ok: false,
+        msg: statusText,
+        data
+      })
+    }
+  } catch (error) {
+    return res.status(500).json({
+      ok: false,
+      msg: 'Internal Server error'
+    })
+  }
 }
 
 module.exports = {
-    getAllfilesDataController
+  getAllFilesDataController,
+  getListController,
+  getFileDataController
 }

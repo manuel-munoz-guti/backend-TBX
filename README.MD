@@ -15,5 +15,5 @@ To run this project follow the next steps:
 
 1. Download or clone the repository into a folder in your local machine with the nex GIT command
 
-    ### `git clone`
+    ### `https://github.com/manuel-munoz-guti/backend-TBX.git`
 
