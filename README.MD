@@ -10,6 +10,11 @@ The backend stack for this project is:
 -  ORM: None
 -  Relational Data Base Engine: None
 -  Container: Docker (Linux Alpine)
+-  Fetching API library: AXIOS
+-  In dev environment I use nodemon
+-  Testing libraries: mocha and chai
+-  Logger library: morgan
+-  Clean Code: standart
 
 To run this project follow as dve environment follow the next steps:
 
