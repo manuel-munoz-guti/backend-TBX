@@ -5,7 +5,7 @@ const cors = require('cors')
 const filesRouter = require('./router/filesRouter')
 require('dotenv').config()
 
-const PORT = process.env.PORT || 4001
+const PORT = process.env.PORT || 3001
 
 // don't show the log when it is test
 if (process.env.NODE_ENV === 'dev') {

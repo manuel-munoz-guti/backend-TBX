@@ -1,0 +1,8 @@
+FROM node:14-alpine
+WORKDIR /test
+COPY package.json /test
+RUN npm install
+COPY . /test
+
+EXPOSE 3005
+CMD [ "npm", "run" ,"test" ]
